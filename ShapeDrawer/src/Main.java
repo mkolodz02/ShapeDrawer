@@ -12,9 +12,9 @@ public class Main extends Application {
 
         Parent root = FXMLLoader.load(getClass().getResource("MainView.fxml"));
 
-        Scene scene = new Scene(root, 300,275);
+        Scene scene = new Scene(root, 1280, 960);
 
-        stage.setTitle("witam");
+        stage.setTitle("title");
         stage.setScene(scene);
         stage.show();
 
