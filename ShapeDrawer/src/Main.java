@@ -14,7 +14,7 @@ public class Main extends Application {
 
         Scene scene = new Scene(root, 1280, 960);
 
-        stage.setTitle("title");
+        stage.setTitle("ShapeDrawer");
         stage.setScene(scene);
         stage.show();
 
