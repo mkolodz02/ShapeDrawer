@@ -13,58 +13,58 @@ import java.util.List;
 import java.util.Optional;
 
 
-public class Controller{
+public class Controller {
 
-    ObservableList<Shape> allShapes;
-    TableView.TableViewSelectionModel<Shape> selectionModel;
-    TextInputDialog dialog;
+    private final ObservableList<Shape> allShapes;
+    private TableView.TableViewSelectionModel<Shape> selectionModel;
+    private final TextInputDialog dialog;
 
     @FXML
-    StackPane centerPanel;
+    private StackPane centerPanel;
     @FXML
-    ColorPicker borderColorPicker;
+    private ColorPicker borderColorPicker;
     @FXML
-    ColorPicker fillColorPicker;
+    private ColorPicker fillColorPicker;
     @FXML
-    Slider changeXSlider;
+    private Slider changeXSlider;
     @FXML
-    Slider changeYSlider;
+    private Slider changeYSlider;
     @FXML
-    Slider rotationSlider;
+    private Slider rotationSlider;
     @FXML
-    TableView<Shape> allElementsTable;
+    private TableView<Shape> allElementsTable;
     @FXML
-    TableColumn<Shape, Double> xColumn;
+    private TableColumn<Shape, Double> xColumn;
     @FXML
-    TableColumn<Shape, Double> yColumn;
+    private TableColumn<Shape, Double> yColumn;
     @FXML
-    TableColumn<Shape, Color> frameColorColumn;
+    private TableColumn<Shape, Color> frameColorColumn;
     @FXML
-    TableColumn<Shape, Color> fillColorColumn;
+    private TableColumn<Shape, Color> fillColorColumn;
     @FXML
-    TableColumn<Shape, String> layerNumberColumn;
+    private TableColumn<Shape, String> layerNumberColumn;
 
-    public Controller(){
+    public Controller() {
         allShapes = FXCollections.observableArrayList();
         dialog = new TextInputDialog();
     }
 
     @FXML
-    public void initialize(){
+    public void initialize() {
         selectionModel = allElementsTable.getSelectionModel();
 
         initTableColumns();
         allElementsTable.setItems(allShapes);
 
-        selectionModel.selectedItemProperty().addListener( (obs, oldSelection, newSelection) ->
-            assignShapeToControls(oldSelection, newSelection
-        ));
+        selectionModel.selectedItemProperty().addListener((obs, oldSelection, newSelection) ->
+                assignShapeToControls(oldSelection, newSelection
+                ));
     }
 
     @FXML
     public void addRect() {
         Optional<String> result = getValueFromDialog("Tworzenie prostokąta", "Podaj wymiary oddzielone ;");
-        try{
+        try {
             result.ifPresent(val -> {
                 String[] arr = val.split(";");
                 double doubleVal1 = Double.parseDouble(arr[0]);
@@ -74,7 +74,7 @@ public class Controller{
                 selectionModel.select(rect);
                 centerPanel.getChildren().addAll(rect);
             });
-        }catch(NumberFormatException | ArrayIndexOutOfBoundsException e){
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             System.out.println("Niepoprawna wartość");
         }
     }
@@ -82,7 +82,7 @@ public class Controller{
     @FXML
     public void addCircle() {
         Optional<String> result = getValueFromDialog("Tworzenie koła", "Podaj promień");
-        try{
+        try {
             result.ifPresent(val -> {
                 double radius = Double.parseDouble(val);
                 Circle circle = new Circle(radius, radius, radius);
@@ -90,44 +90,43 @@ public class Controller{
                 selectionModel.select(circle);
                 centerPanel.getChildren().addAll(circle);
             });
-        }catch(NumberFormatException e){
+        } catch (NumberFormatException e) {
             System.out.println("Podano wartość tekstową, spróbuj ponownie");
         }
     }
 
     @FXML
-    public void addFigForm(){
+    public void addFigForm() {
         Optional<String> result = getValueFromDialog("Tworzenie wielokąta foremnego", "Podaj liczbę boków");
-        try{
+        try {
             result.ifPresent(val -> {
                 int number = Integer.parseInt(val);
-                if(number > 2 && number < 100){
+                if (number > 2 && number < 100) {
                     List<Double> points = new ArrayList<>();
                     Polygon polygon = new Polygon();
                     double phi = 0;
-                    double aStep = (Math.PI*2)/number;
-                    for (int i = 0; i < number; i++){
-                        points.add(((Math.sin(phi)*30)*2)+30.0);
-                        points.add(((Math.cos(phi)*30)*2)+30.0);
+                    double aStep = (Math.PI * 2) / number;
+                    for (int i = 0; i < number; i++) {
+                        points.add(((Math.sin(phi) * 30) * 2) + 30.0);
+                        points.add(((Math.cos(phi) * 30) * 2) + 30.0);
                         phi += aStep;
                     }
                     polygon.getPoints().addAll(points);
                     allShapes.add(polygon);
-                    selectionModel.select(allShapes.size()-1);
+                    selectionModel.select(allShapes.size() - 1);
                     centerPanel.getChildren().addAll(polygon);
-                }
-                else
+                } else
                     System.out.println("Podano wartosc spoza zakresu");
             });
-        }catch(NumberFormatException e){
+        } catch (NumberFormatException e) {
             System.out.println("Podano wartość tekstową, spróbuj ponownie");
         }
     }
 
     @FXML
-    public void addStar(){
+    public void addStar() {
         Optional<String> result = getValueFromDialog("Tworzenie gwiazdy", "Podaj liczbe ramion");
-        try{
+        try {
             result.ifPresent(val -> {
                 int rays = Integer.parseInt(val);
                 int outerRadius = 80, innerRadius = 40;
@@ -135,58 +134,54 @@ public class Controller{
                 List<Double> points = new ArrayList<>();
                 Polygon star = new Polygon();
                 double deltaAngleRad = Math.PI / rays; // kąt w ramieniu
-                for (int i = 0; i < rays * 2; i++)
-                {
-                    double angleRad =i * deltaAngleRad; //kąt wyjścia ze środka
+                for (int i = 0; i < rays * 2; i++) {
+                    double angleRad = i * deltaAngleRad; //kąt wyjścia ze środka
                     double cosAngleRad = Math.cos(angleRad);
                     double sinAngleRad = Math.sin(angleRad);
-                    double x,y;
-                    if ((i % 2) == 0)
-                    {
-                        x=cosAngleRad*outerRadius;
-                        y=sinAngleRad*outerRadius;
-                    }
-                    else
-                    {
-                        x=cosAngleRad*innerRadius;
-                        y=sinAngleRad*innerRadius;
+                    double x, y;
+                    if ((i % 2) == 0) {
+                        x = cosAngleRad * outerRadius;
+                        y = sinAngleRad * outerRadius;
+                    } else {
+                        x = cosAngleRad * innerRadius;
+                        y = sinAngleRad * innerRadius;
                     }
                     points.add(center + x);
                     points.add(center + y);
                 }
                 star.getPoints().addAll(points);
                 allShapes.add(star);
-                selectionModel.select(allShapes.size()-1);
+                selectionModel.select(allShapes.size() - 1);
                 centerPanel.getChildren().addAll(star);
             });
-        }catch(NumberFormatException e){
+        } catch (NumberFormatException e) {
             System.out.println("Podano wartość tekstową, spróbuj ponownie");
         }
     }
 
     @FXML
-    public void addArrow(){
+    public void addArrow() {
         Polygon arrow = new Polygon();
 
         arrow.getPoints().addAll(
-                0.0,45.0,
-                30.0,90.0,
-                30.0,60.0,
-                105.0,60.0,
-                105.0,30.0,
-                30.0,30.0,
-                30.0,0.0,
-                0.0,45.0
+                0.0, 45.0,
+                30.0, 90.0,
+                30.0, 60.0,
+                105.0, 60.0,
+                105.0, 30.0,
+                30.0, 30.0,
+                30.0, 0.0,
+                0.0, 45.0
         );
         allShapes.add(arrow);
-        selectionModel.select(allShapes.size()-1);
+        selectionModel.select(allShapes.size() - 1);
         centerPanel.getChildren().addAll(arrow);
     }
 
     @FXML
-    public void addArc(){
+    public void addArc() {
         Optional<String> result = getValueFromDialog("Tworzenie łuku", "Podaj długość i kąt oddzielone ;");
-        try{
+        try {
             result.ifPresent(val -> {
                 String[] arr = val.split(";");
                 double length = Double.parseDouble(arr[0]);
@@ -194,15 +189,15 @@ public class Controller{
                 Arc arc = new Arc(length, length, angle, angle, 0, length);
                 arc.setType(ArcType.ROUND);
                 allShapes.add(arc);
-                selectionModel.select(allShapes.size()-1);
+                selectionModel.select(allShapes.size() - 1);
                 centerPanel.getChildren().addAll(arc);
             });
-        }catch(NumberFormatException | ArrayIndexOutOfBoundsException e){
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             System.out.println("Niepoprawna wartosc");
         }
     }
 
-    private void initTableColumns(){
+    private void initTableColumns() {
         xColumn.setCellValueFactory(new PropertyValueFactory<>("translateX"));
         yColumn.setCellValueFactory(new PropertyValueFactory<>("translateY"));
         frameColorColumn.setCellValueFactory(new PropertyValueFactory<>("stroke"));
@@ -213,9 +208,9 @@ public class Controller{
         });
     }
 
-    public void assignShapeToControls(Shape oldSelection, Shape newSelection){
+    public void assignShapeToControls(Shape oldSelection, Shape newSelection) {
 
-        if(oldSelection != null){
+        if (oldSelection != null) {
             oldSelection.fillProperty().unbind();
             oldSelection.strokeProperty().unbind();
             oldSelection.translateXProperty().unbind();
@@ -237,7 +232,7 @@ public class Controller{
 
     }
 
-    private Optional<String> getValueFromDialog(String title, String content){
+    private Optional<String> getValueFromDialog(String title, String content) {
         dialog.setTitle(title);
         dialog.setContentText(content);
         return dialog.showAndWait();
